@@ -9,7 +9,7 @@ public class Product implements Parcelable {
     private String category;
     private String barcode;
     private int quantity;
-    private String unitType;
+    private String storedLoc;
     private double buyingPrice;
     private double sellingPrice;
     private String imagePath;
@@ -18,14 +18,15 @@ public class Product implements Parcelable {
     }
 
     public Product(String name, String category, String barcode, int quantity, 
-                   String unitType, double buyingPrice, double sellingPrice) {
+                   String storedLoc, double buyingPrice, double sellingPrice, String imagePath) {
         this.name = name;
         this.category = category;
         this.barcode = barcode;
         this.quantity = quantity;
-        this.unitType = unitType;
+        this.storedLoc = storedLoc;
         this.buyingPrice = buyingPrice;
         this.sellingPrice = sellingPrice;
+        this.imagePath = imagePath;
     }
 
     protected Product(Parcel in) {
@@ -34,7 +35,7 @@ public class Product implements Parcelable {
         category = in.readString();
         barcode = in.readString();
         quantity = in.readInt();
-        unitType = in.readString();
+        storedLoc = in.readString();
         buyingPrice = in.readDouble();
         sellingPrice = in.readDouble();
         imagePath = in.readString();
@@ -93,12 +94,12 @@ public class Product implements Parcelable {
         this.quantity = quantity;
     }
 
-    public String getUnitType() {
-        return unitType;
+    public String getStoredLoc() {
+        return storedLoc;
     }
 
-    public void setUnitType(String unitType) {
-        this.unitType = unitType;
+    public void setStoredLoc(String storedLoc) {
+        this.storedLoc = storedLoc;
     }
 
     public double getBuyingPrice() {
@@ -145,7 +146,7 @@ public class Product implements Parcelable {
         dest.writeString(category);
         dest.writeString(barcode);
         dest.writeInt(quantity);
-        dest.writeString(unitType);
+        dest.writeString(storedLoc);
         dest.writeDouble(buyingPrice);
         dest.writeDouble(sellingPrice);
         dest.writeString(imagePath);

@@ -39,8 +39,8 @@
 
             <ImageButton
                 android:id="@+id/add_image_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
                 android:src="@drawable/add_icon_button"
@@ -51,8 +51,8 @@
 
             <ImageButton
                 android:id="@+id/list_image_button"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
                 android:src="@drawable/list_icon_button"

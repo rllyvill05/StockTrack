@@ -10,7 +10,6 @@ import com.example.stocktrack.Product;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -33,9 +32,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 "category TEXT," +
                 "barcode TEXT," +
                 "quantity INTEGER," +
-                "unit_type TEXT," +
+                "stored_loc TEXT," +
                 "buying_price REAL," +
-                "selling_price REAL)");
+                "selling_price REAL," +
+                "img_path TEXT" +")");
     }
 
     @Override
@@ -54,9 +54,11 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put("category", p.getCategory());
         cv.put("barcode", p.getBarcode());
         cv.put("quantity", p.getQuantity());
-        cv.put("unit_type", p.getUnitType());
+        cv.put("stored_loc", p.getStoredLoc());
         cv.put("buying_price", p.getBuyingPrice());
         cv.put("selling_price", p.getSellingPrice());
+        cv.put("img_path", p.getImagePath());
+
 
         db.insert("products", null, cv);
         db.close();
@@ -70,17 +72,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
         if (c.moveToFirst()) {
             do {
-                Product p = new Product(
-                        c.getString(2),  // name
-                        c.getString(3),  // category
-                        c.getString(4),  // barcode
-                        c.getInt(5),     // quantity
-                        c.getString(6),  // unit_type
-                        c.getDouble(7),  // buying_price
-                        c.getDouble(8)   // selling_price
-                );
+                Product p = new Product();
+
+                p.setId(c.getString(c.getColumnIndexOrThrow("uuidString")));
+                p.setName(c.getString(c.getColumnIndexOrThrow("name")));
+                p.setCategory(c.getString(c.getColumnIndexOrThrow("category")));
+                p.setBarcode(c.getString(c.getColumnIndexOrThrow("barcode")));
+                p.setQuantity(c.getInt(c.getColumnIndexOrThrow("quantity")));
+                p.setStoredLoc(c.getString(c.getColumnIndexOrThrow("stored_loc"))); // Correctly set stored_loc
+                p.setBuyingPrice(c.getDouble(c.getColumnIndexOrThrow("buying_price")));
+                p.setSellingPrice(c.getDouble(c.getColumnIndexOrThrow("selling_price")));
+                p.setImagePath(c.getString(c.getColumnIndexOrThrow("img_path"))); // Correctly set img_path
                 // Set the UUID from the database
-                p.setId(c.getString(1));
                 list.add(p);
             } while (c.moveToNext());
         }
@@ -102,17 +105,16 @@ public class DBHelper extends SQLiteOpenHelper {
                 null, null, null);
 
         if (c.moveToFirst()) {
-            product = new Product(
-                    c.getString(2),  // name
-                    c.getString(3),  // category
-                    c.getString(4),  // barcode
-                    c.getInt(5),     // quantity
-                    c.getString(6),  // unit_type
-                    c.getDouble(7),  // buying_price
-                    c.getDouble(8)   // selling_price
-            );
-            // Set the UUID from the database
-            product.setId(c.getString(1));
+            product = new Product();
+            product.setId(c.getString(c.getColumnIndexOrThrow("uuidString")));
+            product.setName(c.getString(c.getColumnIndexOrThrow("name")));
+            product.setCategory(c.getString(c.getColumnIndexOrThrow("category")));
+            product.setBarcode(c.getString(c.getColumnIndexOrThrow("barcode")));
+            product.setQuantity(c.getInt(c.getColumnIndexOrThrow("quantity")));
+            product.setStoredLoc(c.getString(c.getColumnIndexOrThrow("stored_loc")));
+            product.setBuyingPrice(c.getDouble(c.getColumnIndexOrThrow("buying_price")));
+            product.setSellingPrice(c.getDouble(c.getColumnIndexOrThrow("selling_price")));
+            product.setImagePath(c.getString(c.getColumnIndexOrThrow("img_path")));
         }
 
         c.close();
@@ -138,9 +140,10 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put("category", p.getCategory());
         cv.put("barcode", p.getBarcode());
         cv.put("quantity", p.getQuantity());
-        cv.put("unit_type", p.getUnitType());
+        cv.put("stored_loc", p.getStoredLoc());
         cv.put("buying_price", p.getBuyingPrice());
         cv.put("selling_price", p.getSellingPrice());
+        cv.put("img_path", p.getImagePath());
 
         db.update("products", cv, "uuidString=?", new String[]{p.getId().toString()});
         db.close();

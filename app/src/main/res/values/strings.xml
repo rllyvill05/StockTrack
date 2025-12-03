@@ -25,7 +25,16 @@
     <string name="edit">Edit</string>
     <string name="product_details">Product Details</string>
     <string name="no_products">No products found</string>
+    <string name="no_results">No results found</string>
+    <string name="no_image_found_description">No image found</string>
     <string name="confirm_delete">Are you sure you want to delete this product?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+<!--    <string-array name="category">-->
+<!--        <item>Hot Drinks</item>-->
+<!--        <item></item>-->
+<!--        <item>Dairy</item>-->
+<!--        <item>Bakery</item>-->
+<!--    </string-array>-->
 </resources>

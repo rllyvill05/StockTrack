@@ -190,12 +190,6 @@ private void loadFragment(Fragment fragment) {
         updateBottomNavigationState();
     }
 
-    public void navigateToScanFragment() {
-        currentFragmentTag = TAG_SCAN;
-        replaceFragment(new ScanFragment(), TAG_SCAN);
-        updateBottomNavigationState();
-    }
-
     public void navigateToProductDetail(Product product) {
         // Create ProductDetailFragment with product data
         ProductDetailFragment detailFragment = ProductDetailFragment.newInstance(product);

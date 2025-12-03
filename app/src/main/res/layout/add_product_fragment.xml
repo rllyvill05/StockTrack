@@ -24,7 +24,7 @@
             android:id="@+id/tv_label_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Name"
+            android:hint="Name of the item"
             android:paddingVertical="8dp"
             android:textColor="#A0A0A0"
             android:textSize="16sp"
@@ -35,7 +35,7 @@
             android:id="@+id/tv_label_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Category"
+            android:hint="Category: Food, Drinks, Hygiene, Detergents"
             android:paddingVertical="8dp"
             android:textColor="#A0A0A0"
             android:textSize="14sp"
@@ -59,12 +59,13 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/iv_barcode"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:padding="4dp"
-                android:src="@android:drawable/ic_menu_camera" />
+                android:background="@drawable/scanner_icon_button"
+                app:background="?attr/selectableItemBackgroundBorderless"/>
         </LinearLayout>
 
         <!-- Quantity / Unit type row -->
@@ -85,12 +86,12 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/tv_label_unit_type"
+                android:id="@+id/tv_stored_location"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:hint="Unit Type"
+                android:hint="Storage location"
                 android:paddingVertical="8dp"
                 android:textColor="#A0A0A0"
                 android:textSize="12sp"
@@ -163,7 +164,7 @@
         <Button
             android:id="@+id/btn_add_product"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="58dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"

@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ public class ProductDetailFragment extends Fragment {
     private TextView tvProductBuyingPrice;
     private TextView tvProductSellingPrice;
     private ImageView ivProductImage;
+    private File ivPhotoFile;
     private Button btnEditProduct;
 
     public static ProductDetailFragment newInstance(Product product) {
@@ -55,7 +57,28 @@ public class ProductDetailFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_product_detail, container, false);
+        View v =  inflater.inflate(R.layout.fragment_product_detail, container, false);
+
+        ivProductImage = v.findViewById(R.id.iv_product_image);
+        ivProductImage.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        displayProductData();
+
+                        ivProductImage.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                });
+
+        ivProductImage.setOnClickListener(view -> {
+            if (ivPhotoFile != null && ivPhotoFile.exists()) {
+                PhotoFragment.newInstance(ivPhotoFile)
+                        .show(getParentFragmentManager(), "PhotoDialog");
+            }
+        });
+        updatePhotoView();
+
+        return v;
     }
 
     @Override
@@ -101,6 +124,29 @@ public class ProductDetailFragment extends Fragment {
         });
     }
 
+    private void updatePhotoView() {
+        if (ivPhotoFile == null || !ivPhotoFile.exists()) {
+            ivProductImage.setImageDrawable(null);
+            ivProductImage.setContentDescription(
+                    getString(R.string.no_image_found_description));
+            return;
+        }
+
+        int width = ivProductImage.getWidth();
+        int height = ivProductImage.getHeight();
+
+        if (width == 0 || height == 0) {
+            // Dimensions not ready yet
+            return;
+        }
+
+        Bitmap bitmap = PictureUtils.getScaledBitmap(
+                ivPhotoFile.getPath(), width, height);
+        ivProductImage.setImageBitmap(bitmap);
+        ivProductImage.setContentDescription(
+                getString(R.string.no_image_found_description));
+    }
+
     private void displayProductData() {
         if (product == null) return;
 
@@ -109,7 +155,7 @@ public class ProductDetailFragment extends Fragment {
         tvProductCategory.setText(product.getCategory() != null ? product.getCategory() : "N/A");
         tvProductBarcode.setText(product.getBarcode() != null ? product.getBarcode() : "N/A");
         tvProductQuantity.setText(String.valueOf(product.getQuantity()));
-        tvProductUnitType.setText(product.getUnitType() != null ? product.getUnitType() : "pcs");
+        tvProductUnitType.setText(product.getStoredLoc() != null ? product.getStoredLoc() : "pcs");
         tvProductBuyingPrice.setText(String.format("₱%.2f", product.getBuyingPrice()));
         tvProductSellingPrice.setText(String.format("₱%.2f", product.getSellingPrice()));
 

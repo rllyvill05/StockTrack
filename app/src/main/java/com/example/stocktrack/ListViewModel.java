@@ -43,7 +43,14 @@ public class ListViewModel extends ViewModel {
         loadProducts(); // Reload to update the list
     }
 
+    // In ListViewModel.java
+
     public void filterProducts(String query) {
+        // --- THIS IS THE FIX ---
+        // Always get the latest data from the repository before filtering.
+        // This ensures that any products added/updated elsewhere are included.
+        allProducts = repository.getAllProducts();
+
         if (query == null || query.trim().isEmpty()) {
             products.setValue(allProducts);
             return;
@@ -52,13 +59,14 @@ public class ListViewModel extends ViewModel {
         String lowerQuery = query.toLowerCase();
         List<Product> filtered = new ArrayList<>();
         for (Product product : allProducts) {
-            if (product.getName() != null && product.getName().toLowerCase().contains(lowerQuery) ||
-                product.getCategory() != null && product.getCategory().toLowerCase().contains(lowerQuery) ||
-                (product.getBarcode() != null && product.getBarcode().toLowerCase().contains(lowerQuery))) {
+            if ((product.getName() != null && product.getName().toLowerCase().contains(lowerQuery)) ||
+                    (product.getCategory() != null && product.getCategory().toLowerCase().contains(lowerQuery)) ||
+                    (product.getBarcode() != null && product.getBarcode().toLowerCase().contains(lowerQuery))) {
                 filtered.add(product);
             }
         }
         products.setValue(filtered);
     }
+
 }
 

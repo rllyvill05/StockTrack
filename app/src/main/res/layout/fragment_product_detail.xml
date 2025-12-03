@@ -144,7 +144,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textColor="#666666"
-                        android:gravity="end"
+                        android:gravity="start"
                         tools:text="pcs" />
                 </LinearLayout>
             </LinearLayout>
@@ -201,7 +201,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textColor="#666666"
-                        android:gravity="end"
+                        android:gravity="start"
                         tools:text="₱150.00" />
                 </LinearLayout>
             </LinearLayout>
