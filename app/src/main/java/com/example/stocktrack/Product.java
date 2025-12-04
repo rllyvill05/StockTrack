@@ -15,10 +15,12 @@ public class Product implements Parcelable {
     private String imagePath;
 
     public Product() {
+        this.uuidString = java.util.UUID.randomUUID().toString();
     }
 
     public Product(String name, String category, String barcode, int quantity, 
                    String storedLoc, double buyingPrice, double sellingPrice, String imagePath) {
+        this.uuidString = java.util.UUID.randomUUID().toString();
         this.name = name;
         this.category = category;
         this.barcode = barcode;
@@ -83,7 +85,11 @@ public class Product implements Parcelable {
     }
 
     public void setBarcode(String barcode) {
-        this.barcode = barcode;
+        if (barcode != null) {
+            this.barcode = barcode.trim();
+        } else {
+            this.barcode = null;
+        }
     }
 
     public int getQuantity() {

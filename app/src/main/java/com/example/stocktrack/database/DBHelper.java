@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.stocktrack.Product;
 
@@ -83,6 +84,12 @@ public class DBHelper extends SQLiteOpenHelper {
                 p.setBuyingPrice(c.getDouble(c.getColumnIndexOrThrow("buying_price")));
                 p.setSellingPrice(c.getDouble(c.getColumnIndexOrThrow("selling_price")));
                 p.setImagePath(c.getString(c.getColumnIndexOrThrow("img_path"))); // Correctly set img_path
+                Log.d("DB_DEBUG",
+                        "Loaded: name=" + p.getName() +
+                                " | barcode=" + p.getBarcode() +
+                                " | uuid=" + p.getId());
+
+
                 // Set the UUID from the database
                 list.add(p);
             } while (c.moveToNext());

@@ -299,6 +299,7 @@
 
             // Create product
             Product product = new Product(name, category, barcode, quantity, storedLoc, buyingPrice, sellingPrice,  imageUriStr);
+            product.setId(UUID.randomUUID().toString());
             product.setId(currentProduct.getId()); // Use the UUID we created earlier
             product.setImagePath(imageUriStr);
 

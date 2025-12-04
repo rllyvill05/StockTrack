@@ -7,12 +7,15 @@
 
 
     import android.os.Bundle;
+    import android.util.Log;
     import android.view.LayoutInflater;
     import android.view.Menu;
     import android.view.MenuInflater;
     import android.view.MenuItem;
     import android.view.View;
     import android.view.ViewGroup;
+    import android.view.animation.AnimationUtils;
+    import android.widget.LinearLayout;
     import android.widget.SearchView;
     import android.widget.TextView;
 
@@ -34,6 +37,14 @@
         private TextView tvEmptyState;
         private SearchView searchView;
         private GmsBarcodeScanner scanner;
+
+
+        private static final String TAG = "HomeFragment";
+        private TextView tvItemsCount;
+        private TextView tvLowStockCount;
+        private TextView tvSoldOutCount;
+        private LinearLayout layoutAddCard;
+        private HomeViewModel homeviewModel;
 
 
         @Override
@@ -67,6 +78,41 @@
 
             // Initialize ViewModel - use activity scope so it's shared with AddFragment
             viewModel = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
+            homeviewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+
+            tvItemsCount = view.findViewById(R.id.tv_items_count);
+            tvLowStockCount = view.findViewById(R.id.tv_low_stock_count);
+            tvSoldOutCount = view.findViewById(R.id.tv_sold_out_count);
+
+            if (layoutAddCard != null) {
+                layoutAddCard.setOnClickListener(v -> {
+                    v.startAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in));
+                    // Navigate to add fragment - handled by MainActivity
+                    if (getActivity() instanceof MainActivity) {
+                        ((MainActivity) getActivity()).navigateToAddFragment();
+                    }
+                });
+            }
+
+            // Observe data from ViewModel
+            homeviewModel.getItemsCount().observe(getViewLifecycleOwner(), count -> {
+                Log.d(TAG, "Items count updated: " + count);
+                tvItemsCount.setText(String.valueOf(count));
+            });
+
+            homeviewModel.getLowStockCount().observe(getViewLifecycleOwner(), count -> {
+                Log.d(TAG, "Low stock count updated: " + count);
+                tvLowStockCount.setText(String.valueOf(count));
+            });
+
+            homeviewModel.getSoldOutCount().observe(getViewLifecycleOwner(), count -> {
+                Log.d(TAG, "Sold out count updated: " + count);
+                tvSoldOutCount.setText(String.valueOf(count));
+            });
+
+            homeviewModel.loadSummaryData();
+
 
             // Initialize views
             recyclerView = view.findViewById(R.id.recycler_view_products);
@@ -136,6 +182,8 @@
                 scanner.startScan()
                         .addOnSuccessListener(barcode -> {
                             String scannedCode = barcode.getRawValue();
+                            Log.d("SCAN", "Scanned: " + scannedCode);
+
 
                             viewModel.filterProducts(scannedCode);
 
@@ -173,6 +221,9 @@
             super.onResume();
             // Refresh data when fragment becomes visible
             if (viewModel != null) {
+                viewModel.loadProducts();
+            }
+            if (homeviewModel != null) {
                 viewModel.loadProducts();
             }
         }
