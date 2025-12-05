@@ -43,12 +43,7 @@ public class ListViewModel extends ViewModel {
         loadProducts(); // Reload to update the list
     }
 
-    // In ListViewModel.java
-
     public void filterProducts(String query) {
-        // --- THIS IS THE FIX ---
-        // Always get the latest data from the repository before filtering.
-        // This ensures that any products added/updated elsewhere are included.
         allProducts = repository.getAllProducts();
 
         if (query == null || query.trim().isEmpty()) {
@@ -68,5 +63,26 @@ public class ListViewModel extends ViewModel {
         products.setValue(filtered);
     }
 
-}
+    public void filterLowStockProducts() {
+        allProducts = repository.getAllProducts();
+        List<Product> filtered = new ArrayList<>();
+        for (Product product : allProducts) {
+            if (product.getQuantity() > 0 && product.getQuantity() <= 10) {
+                filtered.add(product);
+            }
+        }
+        products.setValue(filtered);
+    }
 
+    public void filterSoldOutProducts() {
+        allProducts = repository.getAllProducts();
+        List<Product> filtered = new ArrayList<>();
+        for (Product product : allProducts) {
+            if (product.getQuantity() == 0) {
+                filtered.add(product);
+            }
+        }
+        products.setValue(filtered);
+    }
+
+}

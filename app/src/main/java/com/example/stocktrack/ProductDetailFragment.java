@@ -1,10 +1,10 @@
 package com.example.stocktrack;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +15,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.example.stocktrack.database.DBHelper;
 
 import java.io.File;
-import java.io.IOException;
 
 public class ProductDetailFragment extends Fragment {
 
@@ -37,6 +37,8 @@ public class ProductDetailFragment extends Fragment {
     private ImageView ivProductImage;
     private File ivPhotoFile;
     private Button btnEditProduct;
+
+    private static final int REQUEST_PHOTO = 0;
 
     public static ProductDetailFragment newInstance(Product product) {
         ProductDetailFragment fragment = new ProductDetailFragment();
@@ -60,12 +62,15 @@ public class ProductDetailFragment extends Fragment {
         View v =  inflater.inflate(R.layout.fragment_product_detail, container, false);
 
         ivProductImage = v.findViewById(R.id.iv_product_image);
+        
+        DBHelper dbHelper = new DBHelper(requireContext());
+        ivPhotoFile = dbHelper.getPhotoFile(product);
+
         ivProductImage.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        displayProductData();
-
+                        updatePhotoView();
                         ivProductImage.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 });
@@ -76,29 +81,27 @@ public class ProductDetailFragment extends Fragment {
                         .show(getParentFragmentManager(), "PhotoDialog");
             }
         });
-        updatePhotoView();
 
         return v;
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode != Activity.RESULT_OK) return;
+
+        if (requestCode == REQUEST_PHOTO) {
+            Uri uri = FileProvider.getUriForFile(requireActivity(),
+                    requireContext().getPackageName() + ".fileprovider",
+                    ivPhotoFile);
+            requireActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            updatePhotoView();
+        }
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        ImageView productImageView = view.findViewById(R.id.iv_product_image);
-
-        // Get the product (from arguments or repository)
-        Product product = getArguments().getParcelable("product");
-
-        // Load and display the image
-        DBHelper dbHelper = new DBHelper(requireContext());
-        File photoFile = dbHelper.getPhotoFile(product);
-        if (photoFile.exists()) {
-            Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-            productImageView.setImageBitmap(bitmap);
-        } else {
-            productImageView.setImageResource(android.R.drawable.ic_menu_gallery);
-        }
 
         // Initialize views
         tvProductName = view.findViewById(R.id.tv_product_name);
@@ -108,7 +111,6 @@ public class ProductDetailFragment extends Fragment {
         tvProductUnitType = view.findViewById(R.id.tv_product_unit_type);
         tvProductBuyingPrice = view.findViewById(R.id.tv_product_buying_price);
         tvProductSellingPrice = view.findViewById(R.id.tv_product_selling_price);
-        ivProductImage = view.findViewById(R.id.iv_product_image);
         btnEditProduct = view.findViewById(R.id.btn_edit_product);
 
         // Load and display product data
@@ -126,7 +128,7 @@ public class ProductDetailFragment extends Fragment {
 
     private void updatePhotoView() {
         if (ivPhotoFile == null || !ivPhotoFile.exists()) {
-            ivProductImage.setImageDrawable(null);
+            ivProductImage.setImageResource(android.R.drawable.ic_menu_gallery);
             ivProductImage.setContentDescription(
                     getString(R.string.no_image_found_description));
             return;
@@ -159,18 +161,6 @@ public class ProductDetailFragment extends Fragment {
         tvProductBuyingPrice.setText(String.format("₱%.2f", product.getBuyingPrice()));
         tvProductSellingPrice.setText(String.format("₱%.2f", product.getSellingPrice()));
 
-        // Load image if available
-        if (product.getImagePath() != null && !product.getImagePath().isEmpty()) {
-            try {
-                Uri imageUri = Uri.parse(product.getImagePath());
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(
-                        requireActivity().getContentResolver(), imageUri);
-                ivProductImage.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-                // Keep default image on error
-            }
-        }
+        // The image is loaded via updatePhotoView() in onCreateView.
     }
 }
-

@@ -25,8 +25,8 @@
         android:orientation="vertical"
         android:background="#7B5CF0"
         android:elevation="8dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="11dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -39,8 +39,8 @@
 
             <ImageButton
                 android:id="@+id/add_image_button"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="33dp"
+                android:layout_height="33dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
                 android:src="@drawable/add_icon_button"
@@ -51,8 +51,8 @@
 
             <ImageButton
                 android:id="@+id/list_image_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="39dp"
+                android:layout_height="39dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
                 android:src="@drawable/list_icon_button"

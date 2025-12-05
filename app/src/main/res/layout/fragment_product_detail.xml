@@ -132,7 +132,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Unit Type"
+                        android:text="Stored Location"
                         android:textColor="#A0A0A0"
                         android:textSize="12sp"
                         android:textStyle="bold"
