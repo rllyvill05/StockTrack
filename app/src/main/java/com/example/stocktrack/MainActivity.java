@@ -9,10 +9,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -26,12 +24,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG_HOME = "home";
     private static final String TAG_ADD = "add";
     private static final String TAG_LIST = "list";
-    private static final String TAG_SCAN = "scan";
+//    private static final String TAG_SCAN = "scan";
 
     private ImageButton homeButton;
     private ImageButton addButton;
     private ImageButton listButton;
-    private Toolbar toolbar;
+//    private Toolbar toolbar;
     private String currentFragmentTag = TAG_HOME;
 
     @Override
@@ -67,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
             currentFragmentTag = savedInstanceState.getString(KEY_CURRENT_FRAGMENT, TAG_HOME);
         }
         initializeViews();
-//        setupBottomNavigation();
-//        setupWindowInsets();
+        setupBottomNavigation();
+        setupWindowInsets();
 
         //        // Load initial fragment
         if (savedInstanceState == null) {
@@ -79,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Rest of your initialization code...
-        setupBottomNavigation();
+//        setupBottomNavigation();
         loadFragment(new ListFragment());
     }
 
@@ -191,7 +189,6 @@ private void loadFragment(Fragment fragment) {
     }
 
     public void navigateToProductDetail(Product product) {
-        // Create ProductDetailFragment with product data
         ProductDetailFragment detailFragment = ProductDetailFragment.newInstance(product);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, detailFragment, "detail");
@@ -201,7 +198,6 @@ private void loadFragment(Fragment fragment) {
     }
 
     public void navigateToEditFragment(Product product) {
-        // Create EditFragment with product data
         EditFragment editFragment = EditFragment.newInstance(product);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, editFragment, "edit");
@@ -235,10 +231,6 @@ private void loadFragment(Fragment fragment) {
     }
 
     private void updateBottomNavigationState() {
-        // Reset all button states
-//        if (homeButton != null) {
-//            homeButton.setAlpha(0.6f);
-//        }
         if (addButton != null) {
             addButton.setAlpha(0.6f);
         }
@@ -268,7 +260,6 @@ private void loadFragment(Fragment fragment) {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Let the current fragment handle menu creation
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (currentFragment != null) {
             currentFragment.onCreateOptionsMenu(menu, getMenuInflater());
@@ -278,7 +269,6 @@ private void loadFragment(Fragment fragment) {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        // Let the current fragment handle menu item selection
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (currentFragment != null && currentFragment.onOptionsItemSelected(item)) {
             return true;

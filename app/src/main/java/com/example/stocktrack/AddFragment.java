@@ -9,7 +9,6 @@
     import android.content.Intent;
     import android.content.pm.PackageManager;
     import android.graphics.Bitmap;
-    import android.graphics.BitmapFactory;
     import android.net.Uri;
     import android.os.Bundle;
     import android.provider.MediaStore;
@@ -21,7 +20,6 @@
     import android.widget.ImageButton;
     import android.widget.ImageView;
     import android.widget.LinearLayout;
-    import android.widget.Spinner;
     import android.widget.Toast;
     import android.util.Log;
 
@@ -35,35 +33,25 @@
     import androidx.fragment.app.Fragment;
 
     import com.example.stocktrack.database.ProductRepository;
-    import com.google.mlkit.vision.barcode.common.Barcode;
-    import com.google.mlkit.vision.codescanner.GmsBarcodeScanner;
-    import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
-    import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 
     import java.io.File;
     import java.io.FileOutputStream;
     import java.io.IOException;
-    import java.io.InputStream;
     import java.util.UUID;
 
     public class AddFragment extends Fragment {
 
         private EditText etName, etCategory, etBarcode, etQuantity, etStoredLoc, etBuyingPrice, etSellingPrice;
-        private String imagePath;
-        private LinearLayout layoutImagePicker;
         private ImageView ivImagePlaceholder;
-        private Button btnAddProduct;
         private Uri selectedImageUri;
         private File photoFile;
         private Product currentProduct;
 
-        // Activity result launchers
         private ActivityResultLauncher<Intent> galleryLauncher;
         private ActivityResultLauncher<Uri> cameraLauncher;
         private ActivityResultLauncher<String> cameraPermissionLauncher;
 
         private GmsBarcodeScanner scanner;
-        private ImageButton btnScanBarcode;
 
 
         @Override
@@ -133,7 +121,6 @@
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
 
-            // Initialize views
             etName = view.findViewById(R.id.tv_label_name);
             etCategory = view.findViewById(R.id.tv_label_category);
             etBarcode = view.findViewById(R.id.tv_label_barcode);
@@ -141,14 +128,12 @@
             etStoredLoc = view.findViewById(R.id.tv_stored_location);
             etBuyingPrice = view.findViewById(R.id.tv_label_buying_price);
             etSellingPrice = view.findViewById(R.id.tv_label_selling_price);
-            layoutImagePicker = view.findViewById(R.id.layout_image_picker);
+            LinearLayout layoutImagePicker = view.findViewById(R.id.layout_image_picker);
             ivImagePlaceholder = view.findViewById(R.id.iv_image_placeholder);
-            btnAddProduct = view.findViewById(R.id.btn_add_product);
+            Button btnAddProduct = view.findViewById(R.id.btn_add_product);
 
-            btnScanBarcode = view.findViewById(R.id.iv_barcode);
+            ImageButton btnScanBarcode = view.findViewById(R.id.iv_barcode);
             btnScanBarcode.setOnClickListener(v -> {
-
-
                 scanner.startScan()
                         .addOnSuccessListener(barcode -> {
                             Log.d("AddFragment", "Barcode scanned: " + barcode.getRawValue());
@@ -160,10 +145,7 @@
                         });
             });
 
-            // Set click listener for image picker
             layoutImagePicker.setOnClickListener(v -> showImagePickerDialog());
-
-            // Set click listener for add button
             btnAddProduct.setOnClickListener(v -> saveProduct());
         }
 
@@ -191,14 +173,12 @@
 
         private void openCamera() {
             photoFile = getPhotoFile();
-            if (photoFile != null) {
-                Uri photoUri = FileProvider.getUriForFile(
-                        requireContext(),
-                        requireContext().getPackageName() + ".fileprovider",
-                        photoFile
-                );
-                cameraLauncher.launch(photoUri);
-            }
+            Uri photoUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    requireContext().getPackageName() + ".fileprovider",
+                    photoFile
+            );
+            cameraLauncher.launch(photoUri);
         }
 
         private void openGallery() {
@@ -212,29 +192,11 @@
         }
 
         private void displaySelectedImage(Uri imageUri) {
-            try {
-                Bitmap bitmap;
-                if (imageUri.getScheme().equals("file")) {
-                    // Image from camera
-                    bitmap = BitmapFactory.decodeFile(imageUri.getPath());
-                } else {
-                    // Image from gallery
-                    InputStream inputStream = requireContext().getContentResolver().openInputStream(imageUri);
-                    bitmap = BitmapFactory.decodeStream(inputStream);
-                    inputStream.close();
+            // Use the new PictureUtils to safely scale the image
+            Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), ivImagePlaceholder.getWidth(), ivImagePlaceholder.getHeight());
 
-                    // Save gallery image to app storage
-                    saveImageToFile(bitmap);
-                }
-
-                // Display the image
-                ivImagePlaceholder.setImageBitmap(bitmap);
-                ivImagePlaceholder.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(getContext(), "Failed to load image", Toast.LENGTH_SHORT).show();
-            }
+            ivImagePlaceholder.setImageBitmap(bitmap);
+            ivImagePlaceholder.setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
 
         private void saveImageToFile(Bitmap bitmap) {
@@ -247,25 +209,19 @@
         }
 
         private void saveProduct() {
-            // Validate inputs
             String name = etName.getText().toString().trim();
+            if (name.isEmpty()) {
+                etName.setError("Name is required");
+                etName.requestFocus();
+                return;
+            }
+
             String category = etCategory.getText().toString().trim();
             String barcode = etBarcode.getText().toString().trim();
             String quantityStr = etQuantity.getText().toString().trim();
             String storedLoc = etStoredLoc.getText().toString().trim();
             String buyingPriceStr = etBuyingPrice.getText().toString().trim();
             String sellingPriceStr = etSellingPrice.getText().toString().trim();
-            String imageUriStr = null;
-            if (photoFile != null && photoFile.exists()) {
-                imageUriStr = photoFile.getAbsolutePath();
-            } else if (selectedImageUri != null) { // Fallback, though less likely with current logic
-                imageUriStr = selectedImageUri.toString();
-            }
-
-            if (name.isEmpty()) {
-                etName.setError("Name is required");
-                return;
-            }
 
             int quantity = 0;
             if (!quantityStr.isEmpty()) {
@@ -273,6 +229,7 @@
                     quantity = Integer.parseInt(quantityStr);
                 } catch (NumberFormatException e) {
                     etQuantity.setError("Invalid quantity");
+                    etQuantity.requestFocus();
                     return;
                 }
             }
@@ -283,6 +240,7 @@
                     buyingPrice = Double.parseDouble(buyingPriceStr);
                 } catch (NumberFormatException e) {
                     etBuyingPrice.setError("Invalid price");
+                    etBuyingPrice.requestFocus();
                     return;
                 }
             }
@@ -293,28 +251,38 @@
                     sellingPrice = Double.parseDouble(sellingPriceStr);
                 } catch (NumberFormatException e) {
                     etSellingPrice.setError("Invalid price");
+                    etSellingPrice.requestFocus();
                     return;
                 }
             }
 
-            // Create product
-            Product product = new Product(name, category, barcode, quantity, storedLoc, buyingPrice, sellingPrice,  imageUriStr);
-            product.setId(UUID.randomUUID().toString());
-            product.setId(currentProduct.getId()); // Use the UUID we created earlier
-            product.setImagePath(imageUriStr);
+            // Use the 'currentProduct' instance that was created in onCreate.
+            Product product = currentProduct;
+            product.setName(name);
+            product.setCategory(category.isEmpty() ? "Uncategorized" : category);
+            product.setBarcode(barcode);
+            product.setQuantity(quantity);
+            product.setStoredLoc(storedLoc);
+            product.setBuyingPrice(buyingPrice);
+            product.setSellingPrice(sellingPrice);
 
+            // If a photo was taken/selected, its file path should be set.
+            if (photoFile != null && photoFile.exists()) {
+                product.setImagePath(photoFile.getAbsolutePath());
+            } else {
+                product.setImagePath(null);
+            }
 
-            // Save to database
             ProductRepository repository = ProductRepository.getInstance(requireContext());
             repository.addProduct(product);
 
             Toast.makeText(getContext(), "Product added successfully", Toast.LENGTH_SHORT).show();
 
-            // Clear form and navigate back
-            clearForm();
+            // Navigate back and clear the form for the next entry.
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).navigateToListFragment();
             }
+            clearForm();
         }
 
         private void clearForm() {
@@ -328,6 +296,8 @@
             ivImagePlaceholder.setImageResource(android.R.drawable.ic_menu_gallery);
             ivImagePlaceholder.setScaleType(ImageView.ScaleType.FIT_CENTER);
             selectedImageUri = null;
+            photoFile = null;
+
             currentProduct = new Product();
             currentProduct.setId(UUID.randomUUID().toString());
         }

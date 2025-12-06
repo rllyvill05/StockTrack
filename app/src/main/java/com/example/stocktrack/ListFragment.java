@@ -5,7 +5,6 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -27,24 +25,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ProductAdapter adapter;
-    private ListViewModel viewModel;
+    private ListViewModel listViewModel;
+    private HomeViewModel homeViewModel;
     private TextView tvEmptyState;
     private SearchView searchView;
     private GmsBarcodeScanner scanner;
 
 
     private static final String TAG = "HomeFragment";
-    private TextView tvItemsCount;
-    private TextView tvLowStockCount;
-    private TextView tvSoldOutCount;
-    private LinearLayout layoutAddCard;
-    private HomeViewModel homeviewModel;
+    private TextView itemsCount, lowStockCount, soldOutCount;
 
 
     @Override
@@ -76,51 +70,42 @@ public class ListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize ViewModel - use activity scope so it's shared with AddFragment
-        viewModel = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
-        homeviewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        listViewModel = new ViewModelProvider(requireActivity()).get(ListViewModel.class);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
 
-        tvItemsCount = view.findViewById(R.id.tv_items_count);
-        tvLowStockCount = view.findViewById(R.id.tv_low_stock_count);
-        tvSoldOutCount = view.findViewById(R.id.tv_sold_out_count);
-//        layoutAddCard = view.findViewById(R.id.layout_add_card);
+        itemsCount = view.findViewById(R.id.tv_items_count);
+        lowStockCount = view.findViewById(R.id.tv_low_stock_count);
+        soldOutCount = view.findViewById(R.id.tv_sold_out_count);
 
-        if (layoutAddCard != null) {
-            layoutAddCard.setOnClickListener(v -> {
-                v.startAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in));
-                // Navigate to add fragment - handled by MainActivity
-                if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).navigateToAddFragment();
-                }
-            });
-        }
 
-        tvItemsCount.setOnClickListener(v -> viewModel.loadProducts());
-        tvLowStockCount.setOnClickListener(v -> viewModel.filterLowStockProducts());
-        tvSoldOutCount.setOnClickListener(v -> viewModel.filterSoldOutProducts());
+        LinearLayout itemsCountBox = view.findViewById(R.id.layout_items_count);
+        LinearLayout lowStockCountBox = view.findViewById(R.id.layout_low_stock_count);
+        LinearLayout soldOutCountBox = view.findViewById(R.id.layout_sold_out_count);
 
-        // Observe data from ViewModel
-        homeviewModel.getItemsCount().observe(getViewLifecycleOwner(), count -> {
+        itemsCountBox.setOnClickListener(v -> listViewModel.loadProducts());
+        lowStockCountBox.setOnClickListener(v -> listViewModel.filterLowStockProducts());
+        soldOutCountBox.setOnClickListener(v -> listViewModel.filterSoldOutProducts());
+
+
+        homeViewModel.getItemsCount().observe(getViewLifecycleOwner(), count -> {
             Log.d(TAG, "Items count updated: " + count);
-            tvItemsCount.setText(String.valueOf(count));
+            itemsCount.setText(String.valueOf(count));
         });
 
-        homeviewModel.getLowStockCount().observe(getViewLifecycleOwner(), count -> {
+        homeViewModel.getLowStockCount().observe(getViewLifecycleOwner(), count -> {
             Log.d(TAG, "Low stock count updated: " + count);
-            tvLowStockCount.setText(String.valueOf(count));
+            lowStockCount.setText(String.valueOf(count));
         });
 
-        homeviewModel.getSoldOutCount().observe(getViewLifecycleOwner(), count -> {
+        homeViewModel.getSoldOutCount().observe(getViewLifecycleOwner(), count -> {
             Log.d(TAG, "Sold out count updated: " + count);
-            tvSoldOutCount.setText(String.valueOf(count));
+            soldOutCount.setText(String.valueOf(count));
         });
 
-        // Initialize views
         recyclerView = view.findViewById(R.id.recycler_view_products);
         tvEmptyState = view.findViewById(R.id.tv_empty_state);
 
-        // Set up RecyclerView
         adapter = new ProductAdapter(new ArrayList<>(), new ProductAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Product product) {
@@ -139,30 +124,28 @@ public class ListFragment extends Fragment {
             @Override
             public void onSetLowStockClick(Product product) {
                 product.setQuantity(1);
-                viewModel.updateProduct(product);
-                homeviewModel.loadSummaryData();
+                listViewModel.updateProduct(product);
+                homeViewModel.loadSummaryData();
             }
 
             @Override
             public void onSetSoldOutClick(Product product) {
                 product.setQuantity(0);
-                viewModel.updateProduct(product);
-                homeviewModel.loadSummaryData();
+                listViewModel.updateProduct(product);
+                homeViewModel.loadSummaryData();
             }
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-        // Observe products from ViewModel
-        viewModel.getProducts().observe(getViewLifecycleOwner(), products -> {
+        listViewModel.getProducts().observe(getViewLifecycleOwner(), products -> {
             adapter.updateProducts(products);
             updateEmptyState(products.isEmpty());
         });
 
-        // Load initial data
-        viewModel.loadProducts();
-        homeviewModel.loadSummaryData();
+        listViewModel.loadProducts();
+        homeViewModel.loadSummaryData();
     }
 
     @Override
@@ -170,7 +153,6 @@ public class ListFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.toolbar_menu, menu);
 
-        // Set up search functionality
         MenuItem searchItem = menu.findItem(R.id.action_search);
         if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
@@ -187,14 +169,14 @@ public class ListFragment extends Fragment {
                     @Override
                     public boolean onQueryTextChange(String newText) {
                         // Filter products in real-time as the user types
-                        viewModel.filterProducts(newText);
+                        listViewModel.filterProducts(newText);
                         return true;
                     }
                 });
 
                 // Handle the closing of the search view to restore the full list
                 searchView.setOnCloseListener(() -> {
-                    viewModel.loadProducts(); // Or viewModel.filterProducts("");
+                    listViewModel.loadProducts();
                     return false;
                 });
             }
@@ -211,7 +193,7 @@ public class ListFragment extends Fragment {
                         Log.d("SCAN", "Scanned: " + scannedCode);
 
 
-                        viewModel.filterProducts(scannedCode);
+                        listViewModel.filterProducts(scannedCode);
 
                         if (searchView != null) {
                             searchView.setIconified(false);
@@ -221,13 +203,11 @@ public class ListFragment extends Fragment {
                     })
                     .addOnFailureListener(e -> {
                         // user canceled / error
-                        // You might want to log this or show a toast
                     });
 
             return true;
         } else if (item.getItemId() == R.id.action_search) {
             // The SearchView is handled by the system, which expands it automatically.
-            // You can return true to indicate you've handled the click.
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -245,8 +225,8 @@ public class ListFragment extends Fragment {
         super.onResume();
         // Refresh summary data when fragment becomes visible. The product list is managed by LiveData
         // and does not need to be manually reloaded here, which preserves the search/filter state.
-        if (homeviewModel != null) {
-            homeviewModel.loadSummaryData();
+        if (homeViewModel != null) {
+            homeViewModel.loadSummaryData();
         }
     }
 

@@ -90,7 +90,7 @@
                 android:contentDescription="Scan barcode"
                 android:padding="6dp"
                 android:src="@android:drawable/ic_menu_camera"
-                android:tint="#7B5CF0"
+                app:tint="#7B5CF0"
                 app:layout_constraintBottom_toBottomOf="@id/layout_texts"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/layout_texts" />
@@ -112,6 +112,8 @@
                 <Button
                     android:id="@+id/btn_edit_item"
                     style="?android:attr/buttonBarButtonStyle"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button_radius"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Edit" />
@@ -119,6 +121,7 @@
                 <Button
                     android:id="@+id/btn_set_low_stock"
                     style="?android:attr/buttonBarButtonStyle"
+                    android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Set Low" />
@@ -126,9 +129,10 @@
                 <Button
                     android:id="@+id/btn_set_sold_out"
                     style="?android:attr/buttonBarButtonStyle"
+                    android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Set Sold Out" />
+                    android:text="Set Sold" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -55,35 +55,31 @@ public class Product implements Parcelable {
         }
     };
 
-    // Getters and Setters
-    public String getId() {
-        return uuidString;
-    }
+    //ID getter and setter
+    public String getId() { return uuidString; }
 
     public void setId(String uuidString) {
         this.uuidString = uuidString;
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    //Name getter and setter
+    public String getName() {return name; }
 
+    public void setName(String name) { this.name = name; }
+
+    //Category getter and setter
     public String getCategory() {
         return category;
     }
-
     public void setCategory(String category) {
         this.category = category;
     }
 
+    //Barcode getter and setter
     public String getBarcode() {
         return barcode;
     }
-
     public void setBarcode(String barcode) {
         if (barcode != null) {
             this.barcode = barcode.trim();
@@ -92,54 +88,56 @@ public class Product implements Parcelable {
         }
     }
 
+    //Quantity getter and setter
     public int getQuantity() {
         return quantity;
     }
-
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
+
+    //Stored Location getter and setter
     public String getStoredLoc() {
         return storedLoc;
     }
-
     public void setStoredLoc(String storedLoc) {
         this.storedLoc = storedLoc;
     }
 
+
+    //Buying Price getter and setter
     public double getBuyingPrice() {
         return buyingPrice;
     }
-
     public void setBuyingPrice(double buyingPrice) {
         this.buyingPrice = buyingPrice;
     }
 
+
+    //Selling Price getter and setter
     public double getSellingPrice() {
         return sellingPrice;
     }
-
     public void setSellingPrice(double sellingPrice) {
         this.sellingPrice = sellingPrice;
     }
 
+
+    //Image Path getter and setter
     public String getImagePath() {
         return imagePath;
     }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
 
+    //Other methods
     public boolean isLowStock(int threshold) {
         return quantity <= threshold;
     }
-
     public boolean isSoldOut() {
         return quantity == 0;
     }
-
     @Override
     public int describeContents() {
         return 0;

@@ -20,6 +20,7 @@
 
         <!-- Items card -->
         <LinearLayout
+            android:id="@+id/layout_items_count"
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_marginEnd="8dp"
@@ -49,6 +50,7 @@
 
         <!-- Low stock card -->
         <LinearLayout
+            android:id="@+id/layout_low_stock_count"
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_marginEnd="8dp"
@@ -78,6 +80,7 @@
 
         <!-- Sold out card -->
         <LinearLayout
+            android:id="@+id/layout_sold_out_count"
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_weight="1"

@@ -1,21 +1,17 @@
 package com.example.stocktrack.database;
 
 import android.content.Context;
-
 import com.example.stocktrack.Product;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class ProductRepository {
     private static ProductRepository instance;
-    private static Context appContext;
-    private DBHelper dbHelper;
+    private final DBHelper dbHelper;
 
     private ProductRepository(Context context) {
         // Use application context to avoid memory leaks
-        appContext = context.getApplicationContext();
+        Context appContext = context.getApplicationContext();
         dbHelper = new DBHelper(appContext);
     }
 
@@ -49,28 +45,7 @@ public class ProductRepository {
         dbHelper.deleteProduct(productId);
     }
 
-    public void deleteProduct(UUID productId) {
-        dbHelper.deleteProduct(productId.toString());
-    }
-
     public List<Product> getAllProducts() {
         return dbHelper.getAllProducts();
-    }
-
-    public Product getProductByUUID(String uuidString) {
-        List<Product> allProducts = dbHelper.getAllProducts();
-        for (Product product : allProducts) {
-            if (product.getId().toString().equals(uuidString)) {
-                return product;
-            }
-        }
-        return null;
-    }
-
-    // Clean up resources if needed
-    public void close() {
-        if (dbHelper != null) {
-            dbHelper.close();
-        }
     }
 }

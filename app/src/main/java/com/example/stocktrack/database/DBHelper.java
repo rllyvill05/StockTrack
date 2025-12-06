@@ -17,7 +17,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "stocktracker.db";
     private static final int DB_VERSION = 1;
 
-    private Context mContext;
+    private final Context mContext;
 
     public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -45,7 +45,6 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // INSERT
     public void insertProduct(Product p) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -65,7 +64,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    // GET ALL
     public ArrayList<Product> getAllProducts() {
         ArrayList<Product> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -100,35 +98,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    // GET SINGLE PRODUCT BY ID
-    public Product getProductById(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Product product = null;
-
-        Cursor c = db.query("products",
-                null, // columns - null means all columns
-                "id=?",
-                new String[]{String.valueOf(id)},
-                null, null, null);
-
-        if (c.moveToFirst()) {
-            product = new Product();
-            product.setId(c.getString(c.getColumnIndexOrThrow("uuidString")));
-            product.setName(c.getString(c.getColumnIndexOrThrow("name")));
-            product.setCategory(c.getString(c.getColumnIndexOrThrow("category")));
-            product.setBarcode(c.getString(c.getColumnIndexOrThrow("barcode")));
-            product.setQuantity(c.getInt(c.getColumnIndexOrThrow("quantity")));
-            product.setStoredLoc(c.getString(c.getColumnIndexOrThrow("stored_loc")));
-            product.setBuyingPrice(c.getDouble(c.getColumnIndexOrThrow("buying_price")));
-            product.setSellingPrice(c.getDouble(c.getColumnIndexOrThrow("selling_price")));
-            product.setImagePath(c.getString(c.getColumnIndexOrThrow("img_path")));
-        }
-
-        c.close();
-        db.close();
-        return product;
-    }
-
     public File getPhotoFile(Product product) {
         File filesDir = mContext.getFilesDir();
         if (filesDir == null) {
@@ -137,7 +106,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return new File(filesDir, product.getId().toString() + ".jpg");
     }
 
-    // UPDATE
     public void updateProduct(Product p) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -156,7 +124,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    // DELETE
     public void deleteProduct(String uuid) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("products", "uuidString=?", new String[]{uuid});

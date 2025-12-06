@@ -11,9 +11,9 @@ import java.util.List;
 
 public class ListViewModel extends ViewModel {
 
-    private MutableLiveData<List<Product>> products = new MutableLiveData<>();
+    private final MutableLiveData<List<Product>> products = new MutableLiveData<>();
     private List<Product> allProducts = new ArrayList<>();
-    private ProductRepository repository;
+    private final ProductRepository repository;
 
     public ListViewModel() {
         repository = ProductRepository.getInstance();
@@ -28,19 +28,14 @@ public class ListViewModel extends ViewModel {
         products.setValue(allProducts);
     }
 
-    public void addProduct(Product product) {
-        repository.addProduct(product);
-        loadProducts(); // Reload to update the list
-    }
-
     public void updateProduct(Product product) {
         repository.updateProduct(product);
-        loadProducts(); // Reload to update the list
+        loadProducts();
     }
 
     public void deleteProduct(String productId) {
         repository.deleteProduct(productId);
-        loadProducts(); // Reload to update the list
+        loadProducts();
     }
 
     public void filterProducts(String query) {

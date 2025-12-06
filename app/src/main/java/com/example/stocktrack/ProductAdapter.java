@@ -61,7 +61,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             return true;
         });
 
-        // Set listeners
         holder.itemView.setOnClickListener(v -> listener.onItemClick(product));
         holder.btnEditItem.setOnClickListener(v -> listener.onEditClick(product));
         holder.btnSetLowStock.setOnClickListener(v -> listener.onSetLowStockClick(product));

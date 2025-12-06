@@ -13,10 +13,10 @@ import java.util.List;
 
 public class HomeViewModel extends AndroidViewModel {
 
-    private MutableLiveData<Integer> itemsCount = new MutableLiveData<>(0);
-    private MutableLiveData<Integer> lowStockCount = new MutableLiveData<>(0);
-    private MutableLiveData<Integer> soldOutCount = new MutableLiveData<>(0);
-    private ProductRepository repository;
+    private final MutableLiveData<Integer> itemsCount = new MutableLiveData<>(0);
+    private final MutableLiveData<Integer> lowStockCount = new MutableLiveData<>(0);
+    private final MutableLiveData<Integer> soldOutCount = new MutableLiveData<>(0);
+    private final ProductRepository repository;
 
     public HomeViewModel(@NonNull Application application) {
         super(application);
@@ -44,7 +44,7 @@ public class HomeViewModel extends AndroidViewModel {
         for (Product product : products) {
             if (product.isSoldOut()) {
                 soldOut++;
-            } else if (product.isLowStock(5)) { // Threshold of 5 for low stock
+            } else if (product.isLowStock(5)) {
                 lowStock++;
             }
         }

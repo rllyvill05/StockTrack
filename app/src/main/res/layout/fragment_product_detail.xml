@@ -216,7 +216,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:background="#7B5CF0"
+        android:background="@drawable/rounded_button_radius"
         android:text="@string/edit"
         android:textAllCaps="false"
         android:textColor="@android:color/white"

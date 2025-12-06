@@ -1,7 +1,9 @@
 package com.example.stocktrack;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +38,12 @@ public class PhotoFragment extends DialogFragment {
 
         File photoFile = (File) getArguments().getSerializable(ARG_PHOTO_PATH);
         if (photoFile != null && photoFile.exists()) {
-            photoView.setImageURI(Uri.fromFile(photoFile));
+            Activity activity = requireActivity();
+            Point size = new Point();
+            activity.getWindowManager().getDefaultDisplay().getSize(size);
+
+            Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), size.x, size.y);
+            photoView.setImageBitmap(bitmap);
         }
 
         return new AlertDialog.Builder(requireActivity())
