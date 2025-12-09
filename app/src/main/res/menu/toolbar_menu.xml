@@ -12,7 +12,7 @@
     <item
         android:id="@+id/action_scan"
         android:icon="@drawable/scan_icon_button"
-        android:title="Share"
+        android:title="Scan"
         app:showAsAction="ifRoom"/>
 
 </menu>
